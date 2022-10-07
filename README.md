@@ -1,6 +1,10 @@
 # synthetic_TCGA_data_gen  
 Generative deep learning model development for synthetic TCGA omic sample generation  
 
+2022-10-07  
+First run float64 BLCA on 2D convolution VAE  
+Next: MinMax norm, outlier clipping, log scaling     
+
 2022-10-06  
 Convert data type from UNIT8 to float in 2D conv MNIST model  
 Build a float sequential model  
