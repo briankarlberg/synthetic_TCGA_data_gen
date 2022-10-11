@@ -1,5 +1,10 @@
+cvae_venv
+
 a_data_structure/blca_brca_flt64_sqrs
 a_data_structure/mir_files
 a_data_structure/mir_intrsct
-b_model/loss_curves_ignored
 a_data_structure/normed_data
+
+b_model/loss_curves_ignored
+b_model/1Dconv_devel.ipynb
+b_model/dec_out_ignrd
