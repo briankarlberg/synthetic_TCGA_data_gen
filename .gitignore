@@ -4,6 +4,8 @@ a_data_structure/blca_brca_flt64_sqrs
 a_data_structure/mir_files
 a_data_structure/mir_intrsct
 a_data_structure/normed_data
+a_data_structure/normalized_data/
+a_data_structure/trn_tst_nrm_strategy/
 
 b_model/loss_curves_ignored
 b_model/1Dconv_devel.ipynb
