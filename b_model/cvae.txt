@@ -6,6 +6,7 @@ python3 -m venv cvae_venv
 source cvae_venv/bin/activate
 # sample count experiment, keep umap
 pip3 install jupyterlab ipykernel matplotlib numpy tensorflow==2.10 keras sklearn pydot graphviz pandas umap-learn imageio tensorflow_probability
+which python3
 /Users/karlberb/Desktop/RNB00978/sample_count/sample_gen/synthetic_TCGA_data_gen/cvae_venv/bin/python3 -m ipykernel install --name cvae_venv
 jupyter lab
 

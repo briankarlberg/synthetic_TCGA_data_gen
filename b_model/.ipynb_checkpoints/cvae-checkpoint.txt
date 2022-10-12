@@ -1,0 +1,39 @@
+imageio
+tensorflow_probability
+
+# https://www.tensorflow.org/tutorials/generative/cvae
+python3 -m venv cvae_venv
+source cvae_venv/bin/activate
+# sample count experiment, keep umap
+pip3 install jupyterlab ipykernel matplotlib numpy tensorflow==2.10 keras sklearn pydot graphviz pandas umap-learn imageio tensorflow_probability
+which python3
+/Users/karlberb/Desktop/RNB00978/sample_count/sample_gen/synthetic_TCGA_data_gen/cvae_venv/bin/python3 -m ipykernel install --name cvae_venv
+jupyter lab
+
+-----------
+
+# from project root, create named venv
+$ python3 -m venv dense_full_env_00
+
+# activate the venv
+$ source dense_full_env_00/bin/activate
+
+# put packages into venv
+(dense_full_env_00) bash-3.2$ pip3 install jupyterlab ipykernel matplotlib numpy tensorflow==2.10 keras sklearn pydot graphviz pandas umap-learn
+
+# Get the Python3 path
+(dense_full_env_00) bash-3.2$ which python3
+
+# copy Python3 path
+/Users/karlberb/Desktop/RNB00978/sample_count/sample_gen/dense_layer/dense_full_env_00/bin/python3 -m ipykernel install --name 'dense_full_env_00'
+
+# Launch the IDE from command line pwd project root
+jupyter lab
+
+# or
+jupyter-lab
+
+# then choose 
+dense_full_env_00
+
+# from the UI kernel selector, import packages, begin model neural architechting
