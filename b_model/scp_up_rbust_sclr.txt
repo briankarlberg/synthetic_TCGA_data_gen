@@ -1,0 +1,1 @@
+scp /Users/karlberg/work/VAE_devel/1000_samples/data_1000/*.tsv karlberb@exahead1.ohsu.edu:/home/groups/EllrottLab/gdan-tmp/drug_resp/VAE/VAE_DL_II/data
