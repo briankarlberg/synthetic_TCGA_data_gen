@@ -1,3 +1,8 @@
+2022-10-24
+Decoded folder has companion files to ______ raw files for UMAP
+
+--------
+
 sample_gen/synthetic_TCGA_data_gen/b_model/b_model_01.ipynb
 
 is the float.64 2D conv model, data from 
