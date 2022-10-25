@@ -3,4 +3,6 @@ jupyterlab
 numpy
 scikit-learn
 matplotlib
-
+tensorflow
+pydot
+graphviz
