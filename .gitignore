@@ -5,6 +5,10 @@ cvae_venv
 BLCA_test_norm.tsv
 BLCA_train_norm.tsv
 gexp_files
+encoder_*
+decoder_*
+BLCA_*
+BRCA_*
 a_data_structure/blca_brca_flt64_sqrs
 a_data_structure/mir_files
 a_data_structure/mir_intrsct
