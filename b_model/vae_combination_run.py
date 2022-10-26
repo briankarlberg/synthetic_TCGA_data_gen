@@ -4,6 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import itertools
 from datetime import datetime
+import argparse
 
 date = datetime.today().strftime('%Y-%m-%d')
 cohorts = ["BRCA"]
@@ -13,6 +14,13 @@ batch_size = [32, 64, 128]
 version = '1d_model'
 
 combinations = list(itertools.product(cohorts, otlr_cuts, epochs, batch_size))
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--index", "-i", action="store", required=True,
+                    help="combo index number", type=int)
+args = parser.parse_args()
+
+selected_combination = combinations[args.index]
 
 # 1Dconv, do not rebuild in memory - build from fresh kernel only (blank run)
 import tensorflow as tf
@@ -33,7 +41,7 @@ tf.compat.v1.disable_eager_execution()
 print('libraries done')
 
 
-def build_model(latent_dim: int, train_norm: pd.DataFrame):
+def build_model(latent_dim: int, train_norm: np.array):
     def compute_latent(x):
         batch = K.shape(mu)[0]
         dim = K.int_shape(mu)[1]
@@ -122,66 +130,65 @@ def create_plots(cohort: str, otlr_cut: str, latent_dim: int, batch_size: int, d
     plt.close('all')
 
 
-for combination in combinations:
-    cohort = combination[0]
-    otlr_cut = combination[1]
-    epochs = combination[2]
-    batch_size = combination[3]
-    latent_dim = 100
+cohort = selected_combination[0]
+otlr_cut = selected_combination[1]
+epochs = selected_combination[2]
+batch_size = selected_combination[3]
+latent_dim = 100
 
-    # read pre-normalized data
-    train_norm = pd.read_csv(
-        '../a_data_structure/normalized_data/flat/' + cohort + '_X_train_flat_' + otlr_cut + '_otlr_cut_MinMax.tsv',
-        sep='\t',
-        index_col=0)
+# read pre-normalized data
+train_norm = pd.read_csv(
+    '../a_data_structure/normalized_data/flat/' + cohort + '_X_train_flat_' + otlr_cut + '_otlr_cut_MinMax.tsv',
+    sep='\t',
+    index_col=0)
 
-    test_norm = pd.read_csv(
-        '../a_data_structure/normalized_data/flat/' + cohort + '_X_test_flat_' + otlr_cut + '_otlr_cut_MinMax.tsv',
-        sep='\t',
-        index_col=0)
+test_norm = pd.read_csv(
+    '../a_data_structure/normalized_data/flat/' + cohort + '_X_test_flat_' + otlr_cut + '_otlr_cut_MinMax.tsv',
+    sep='\t',
+    index_col=0)
 
-    train_norm_arr = train_norm.to_numpy()
-    train_norm_arr_exp = np.expand_dims(train_norm_arr, axis=-1)
+train_norm_arr = train_norm.to_numpy()
+train_norm_arr_exp = np.expand_dims(train_norm_arr, axis=-1)
 
-    test_norm_arr = test_norm.to_numpy()
-    test_norm_arr_exp = np.expand_dims(test_norm_arr, axis=-1)
+test_norm_arr = test_norm.to_numpy()
+test_norm_arr_exp = np.expand_dims(test_norm_arr, axis=-1)
 
-    encoder, decoder, vae = build_model(latent_dim, train_norm_arr)
+encoder, decoder, vae = build_model(latent_dim, train_norm_arr)
 
-    tf.keras.utils.plot_model(
-        encoder,
-        show_shapes=True,
-        to_file=f'encoder_{cohort}_{otlr_cut}_{epochs}_{batch_size}_1D_model.png')
+tf.keras.utils.plot_model(
+    encoder,
+    show_shapes=True,
+    to_file=f'encoder_{cohort}_{otlr_cut}_{epochs}_{batch_size}_1D_model.png')
 
-    tf.keras.utils.plot_model(
-        decoder,
-        show_shapes=True,
-        to_file=f"decoder_{cohort}_{otlr_cut}_{epochs}_{batch_size}_1D_model.png")
+tf.keras.utils.plot_model(
+    decoder,
+    show_shapes=True,
+    to_file=f"decoder_{cohort}_{otlr_cut}_{epochs}_{batch_size}_1D_model.png")
 
-    history = vae.fit(x=train_norm_arr_exp, y=train_norm_arr_exp, epochs=epochs,
-                      batch_size=batch_size,
-                      validation_data=(test_norm_arr_exp, test_norm_arr_exp))
+history = vae.fit(x=train_norm_arr_exp, y=train_norm_arr_exp, epochs=epochs,
+                  batch_size=batch_size,
+                  validation_data=(test_norm_arr_exp, test_norm_arr_exp))
 
-    create_plots(cohort, otlr_cut, latent_dim, batch_size, date, version, history)
+create_plots(cohort, otlr_cut, latent_dim, batch_size, date, version, history)
 
-    trn_ltnt = encoder.predict(train_norm_arr_exp)
-    tst_ltnt = encoder.predict(test_norm_arr_exp)
-    trn_dec = decoder.predict(trn_ltnt)
-    tst_dec = decoder.predict(tst_ltnt)
+trn_ltnt = encoder.predict(train_norm_arr_exp)
+tst_ltnt = encoder.predict(test_norm_arr_exp)
+trn_dec = decoder.predict(trn_ltnt)
+tst_dec = decoder.predict(tst_ltnt)
 
-    trn_decDF = pd.DataFrame(np.squeeze(trn_dec))  # hoping the labels map from the raw file, do in UMAP
-    tst_decDF = pd.DataFrame(np.squeeze(tst_dec))
+trn_decDF = pd.DataFrame(np.squeeze(trn_dec))  # hoping the labels map from the raw file, do in UMAP
+tst_decDF = pd.DataFrame(np.squeeze(tst_dec))
 
-    trn_decDF.to_csv(cohort + '_' +
-                     # '_pretrain_'+
-                     otlr_cut + '_outlier_cut_train_' +  # Train <------
-                     str(epochs) + '_epochs_' +
-                     str(latent_dim) + '_latent_dim_' +
-                     date + '_' + version + '.tsv', sep='\t')
+trn_decDF.to_csv(cohort + '_' +
+                 # '_pretrain_'+
+                 otlr_cut + '_outlier_cut_train_' +  # Train <------
+                 str(epochs) + '_epochs_' +
+                 str(latent_dim) + '_latent_dim_' +
+                 date + '_' + version + '.tsv', sep='\t')
 
-    tst_decDF.to_csv(cohort + '_' +
-                     # '_pretrain_'+
-                     otlr_cut + '_outlier_cut_test_' +  # Test <------
-                     str(epochs) + '_epochs_' +
-                     str(latent_dim) + '_latent_dim_' +
-                     date + '_' + version + '.tsv', sep='\t')
+tst_decDF.to_csv(cohort + '_' +
+                 # '_pretrain_'+
+                 otlr_cut + '_outlier_cut_test_' +  # Test <------
+                 str(epochs) + '_epochs_' +
+                 str(latent_dim) + '_latent_dim_' +
+                 date + '_' + version + '.tsv', sep='\t')
