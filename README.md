@@ -1,6 +1,9 @@
 # synthetic_TCGA_data_gen  
 Generative deep learning model development for synthetic TCGA omic sample generation  
 
+2022-10-25
+pip install -r requirements.txt
+
 2022-10-07  
 First run float64 BLCA on 2D convolution VAE  
 Next: MinMax norm, outlier clipping, log scaling     
