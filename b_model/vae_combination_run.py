@@ -5,6 +5,20 @@ import matplotlib.pyplot as plt
 import itertools
 from datetime import datetime
 import argparse
+from pathlib import Path
+import tensorflow as tf
+from keras import backend as K
+from keras.layers import (Input,  # want float.64 to go into this layer, two input layers (enc and dec)
+                          Conv1D,
+                          Dense,
+                          Conv1DTranspose,
+                          Flatten,
+                          Lambda,
+                          Reshape)
+from keras.models import Model
+from keras.losses import binary_crossentropy
+
+print('libraries loaded')
 
 date = datetime.today().strftime('%Y-%m-%d')
 cohorts = ["BRCA"]
@@ -15,30 +29,10 @@ version = '1d_model'
 
 combinations = list(itertools.product(cohorts, otlr_cuts, epochs, batch_size))
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--index", "-i", action="store", required=True,
-                    help="combo index number", type=int)
-args = parser.parse_args()
-
-selected_combination = combinations[args.index]
-
 # 1Dconv, do not rebuild in memory - build from fresh kernel only (blank run)
-import tensorflow as tf
 
-from keras import backend as K
-from keras.layers import (Input,  # want float.64 to go into this layer, two input layers (enc and dec)
-                          Conv1D,
-                          Dense,
-                          Conv1DTranspose,
-                          Flatten,
-                          Lambda,
-                          Reshape)
-from keras.models import Model
-
-from keras.losses import binary_crossentropy
 
 tf.compat.v1.disable_eager_execution()
-print('libraries done')
 
 
 def build_model(latent_dim: int, train_norm: np.array):
@@ -107,7 +101,8 @@ def build_model(latent_dim: int, train_norm: np.array):
     return encoder, decoder, vae
 
 
-def create_plots(cohort: str, otlr_cut: str, latent_dim: int, batch_size: int, date: str, version: str, history):
+def create_plots(cohort: str, epochs: int, otlr_cut: str, latent_dim: int, batch_size: int, date: str, version: str,
+                 history):
     plt.plot(history.history['loss'], label="loss")
     plt.plot(history.history['val_loss'], label="val_loss")
     plt.title(cohort + ' embedding loss\n1D convolutional VAE'
@@ -125,70 +120,84 @@ def create_plots(cohort: str, otlr_cut: str, latent_dim: int, batch_size: int, d
                  )
 
     plt.legend(loc="lower left")
-    plt.savefig(
-        f'{cohort}_outlier_cut_{otlr_cut}_epochs_{str(epochs)}_latent_dim_{str(latent_dim)}_{date}_{version}.png')
+    plt.savefig(Path(results_folder,
+                     f'{cohort}_outlier_cut_{otlr_cut}_epochs_{str(epochs)}_latent_dim_{str(latent_dim)}_{date}_{version}.png'))
     plt.close('all')
 
 
-cohort = selected_combination[0]
-otlr_cut = selected_combination[1]
-epochs = selected_combination[2]
-batch_size = selected_combination[3]
-latent_dim = 100
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--index", "-i", action="store", required=True,
+                        help="combo index number", type=int)
+    args = parser.parse_args()
 
-# read pre-normalized data
-train_norm = pd.read_csv(
-    '../a_data_structure/normalized_data/flat/' + cohort + '_X_train_flat_' + otlr_cut + '_otlr_cut_MinMax.tsv',
-    sep='\t',
-    index_col=0)
+    results_folder = Path("results")
 
-test_norm = pd.read_csv(
-    '../a_data_structure/normalized_data/flat/' + cohort + '_X_test_flat_' + otlr_cut + '_otlr_cut_MinMax.tsv',
-    sep='\t',
-    index_col=0)
+    if not results_folder.exists():
+        results_folder.mkdir(parents=True, exist_ok=True)
 
-train_norm_arr = train_norm.to_numpy()
-train_norm_arr_exp = np.expand_dims(train_norm_arr, axis=-1)
+    selected_combination = combinations[args.index]
 
-test_norm_arr = test_norm.to_numpy()
-test_norm_arr_exp = np.expand_dims(test_norm_arr, axis=-1)
+    cohort = selected_combination[0]
+    otlr_cut = selected_combination[1]
+    epochs = selected_combination[2]
+    batch_size = selected_combination[3]
+    latent_dim = 100
 
-encoder, decoder, vae = build_model(latent_dim, train_norm_arr)
+    # read pre-normalized data
+    train_norm = pd.read_csv(
+        '../a_data_structure/normalized_data/flat/' + cohort + '_X_train_flat_' + otlr_cut + '_otlr_cut_MinMax.tsv',
+        sep='\t',
+        index_col=0)
 
-tf.keras.utils.plot_model(
-    encoder,
-    show_shapes=True,
-    to_file=f'encoder_{cohort}_{otlr_cut}_{epochs}_{batch_size}_1D_model.png')
+    test_norm = pd.read_csv(
+        '../a_data_structure/normalized_data/flat/' + cohort + '_X_test_flat_' + otlr_cut + '_otlr_cut_MinMax.tsv',
+        sep='\t',
+        index_col=0)
 
-tf.keras.utils.plot_model(
-    decoder,
-    show_shapes=True,
-    to_file=f"decoder_{cohort}_{otlr_cut}_{epochs}_{batch_size}_1D_model.png")
+    train_norm_arr = train_norm.to_numpy()
+    train_norm_arr_exp = np.expand_dims(train_norm_arr, axis=-1)
 
-history = vae.fit(x=train_norm_arr_exp, y=train_norm_arr_exp, epochs=epochs,
-                  batch_size=batch_size,
-                  validation_data=(test_norm_arr_exp, test_norm_arr_exp))
+    test_norm_arr = test_norm.to_numpy()
+    test_norm_arr_exp = np.expand_dims(test_norm_arr, axis=-1)
 
-create_plots(cohort, otlr_cut, latent_dim, batch_size, date, version, history)
+    encoder, decoder, vae = build_model(latent_dim, train_norm_arr)
 
-trn_ltnt = encoder.predict(train_norm_arr_exp)
-tst_ltnt = encoder.predict(test_norm_arr_exp)
-trn_dec = decoder.predict(trn_ltnt)
-tst_dec = decoder.predict(tst_ltnt)
+    tf.keras.utils.plot_model(
+        encoder,
+        show_shapes=True,
+        to_file=Path(results_folder, f'encoder_{cohort}_{otlr_cut}_{epochs}_{batch_size}_1D_model.png'))
 
-trn_decDF = pd.DataFrame(np.squeeze(trn_dec))  # hoping the labels map from the raw file, do in UMAP
-tst_decDF = pd.DataFrame(np.squeeze(tst_dec))
+    tf.keras.utils.plot_model(
+        decoder,
+        show_shapes=True,
+        to_file=Path(results_folder, f"decoder_{cohort}_{otlr_cut}_{epochs}_{batch_size}_1D_model.png"))
 
-trn_decDF.to_csv(cohort + '_' +
-                 # '_pretrain_'+
-                 otlr_cut + '_outlier_cut_train_' +  # Train <------
-                 str(epochs) + '_epochs_' +
-                 str(latent_dim) + '_latent_dim_' +
-                 date + '_' + version + '.tsv', sep='\t')
+    history = vae.fit(x=train_norm_arr_exp, y=train_norm_arr_exp, epochs=epochs,
+                      batch_size=batch_size,
+                      validation_data=(test_norm_arr_exp, test_norm_arr_exp))
 
-tst_decDF.to_csv(cohort + '_' +
-                 # '_pretrain_'+
-                 otlr_cut + '_outlier_cut_test_' +  # Test <------
-                 str(epochs) + '_epochs_' +
-                 str(latent_dim) + '_latent_dim_' +
-                 date + '_' + version + '.tsv', sep='\t')
+    create_plots(cohort=cohort, otlr_cut=otlr_cut, latent_dim=latent_dim, batch_size=batch_size, date=date,
+                 version=version, history=history, epochs=epochs)
+
+    trn_ltnt = encoder.predict(train_norm_arr_exp)
+    tst_ltnt = encoder.predict(test_norm_arr_exp)
+    trn_dec = decoder.predict(trn_ltnt)
+    tst_dec = decoder.predict(tst_ltnt)
+
+    trn_decDF = pd.DataFrame(np.squeeze(trn_dec))  # hoping the labels map from the raw file, do in UMAP
+    tst_decDF = pd.DataFrame(np.squeeze(tst_dec))
+
+    trn_decDF.to_csv(Path(results_folder, cohort + '_' +
+                          # '_pretrain_'+
+                          otlr_cut + '_outlier_cut_train_' +  # Train <------
+                          str(epochs) + '_epochs_' +
+                          str(latent_dim) + '_latent_dim_' +
+                          date + '_' + version + '.tsv', sep='\t'))
+
+    tst_decDF.to_csv(Path(results_folder, cohort + '_' +
+                          # '_pretrain_'+
+                          otlr_cut + '_outlier_cut_test_' +  # Test <------
+                          str(epochs) + '_epochs_' +
+                          str(latent_dim) + '_latent_dim_' +
+                          date + '_' + version + '.tsv', sep='\t'))
