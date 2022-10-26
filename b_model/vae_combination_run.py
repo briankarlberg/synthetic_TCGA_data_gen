@@ -101,28 +101,28 @@ def build_model(latent_dim: int, train_norm: np.array):
     return encoder, decoder, vae
 
 
-def create_plots(cohort: str, epochs: int, otlr_cut: str, latent_dim: int, batch_size: int, date: str, version: str,
-                 history):
-    plt.plot(history.history['loss'], label="loss")
-    plt.plot(history.history['val_loss'], label="val_loss")
-    plt.title(cohort + ' embedding loss\n1D convolutional VAE'
-              # ' pre-train\n'+
-              )
-    plt.xlabel('Epoch')
-    plt.ylabel('Loss')
-    plt.annotate('Outliers cut value = ' + otlr_cut +
-                 '\nlatent dim = ' + str(latent_dim) +
-                 '\nBatch size = ' + str(batch_size) +
-                 '\nConvolutional layer count = 2\nTest ratio = .25\nNormalization = MinMax',
-                 xy=(.4, .8), xycoords='figure fraction',
-                 horizontalalignment='left', verticalalignment='top',
-                 # fontsize=20
-                 )
-
-    plt.legend(loc="lower left")
-    plt.savefig(Path(results_folder,
-                     f'{cohort}_outlier_cut_{otlr_cut}_epochs_{str(epochs)}_latent_dim_{str(latent_dim)}_{date}_{version}.png'))
-    plt.close('all')
+# def create_plots(cohort: str, epochs: int, otlr_cut: str, latent_dim: int, batch_size: int, date: str, version: str,
+#                  history):
+#     plt.plot(history.history['loss'], label="loss")
+#     plt.plot(history.history['val_loss'], label="val_loss")
+#     plt.title(cohort + ' embedding loss\n1D convolutional VAE'
+#               # ' pre-train\n'+
+#               )
+#     plt.xlabel('Epoch')
+#     plt.ylabel('Loss')
+#     plt.annotate('Outliers cut value = ' + otlr_cut +
+#                  '\nlatent dim = ' + str(latent_dim) +
+#                  '\nBatch size = ' + str(batch_size) +
+#                  '\nConvolutional layer count = 2\nTest ratio = .25\nNormalization = MinMax',
+#                  xy=(.4, .8), xycoords='figure fraction',
+#                  horizontalalignment='left', verticalalignment='top',
+#                  # fontsize=20
+#                  )
+#
+#     plt.legend(loc="lower left")
+#     plt.savefig(Path(results_folder,
+#                      f'{cohort}_outlier_cut_{otlr_cut}_epochs_{str(epochs)}_latent_dim_{str(latent_dim)}_{date}_{version}.png'))
+#     plt.close('all')
 
 
 if __name__ == '__main__':
@@ -177,8 +177,8 @@ if __name__ == '__main__':
                       batch_size=batch_size,
                       validation_data=(test_norm_arr_exp, test_norm_arr_exp))
 
-    create_plots(cohort=cohort, otlr_cut=otlr_cut, latent_dim=latent_dim, batch_size=batch_size, date=date,
-                 version=version, history=history, epochs=epochs)
+    # create_plots(cohort=cohort, otlr_cut=otlr_cut, latent_dim=latent_dim, batch_size=batch_size, date=date,
+    #             version=version, history=history, epochs=epochs)
 
     trn_ltnt = encoder.predict(train_norm_arr_exp)
     tst_ltnt = encoder.predict(test_norm_arr_exp)
