@@ -1,3 +1,7 @@
+g_devel/raw_baseline_plots
+g_devel/decoded_baseline_plots
+g_devel/overlay_plots
+
 g_devel/data
 
 .DS_Store
