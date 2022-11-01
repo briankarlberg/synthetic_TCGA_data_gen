@@ -3,6 +3,7 @@ g_devel/decoded_baseline_plots
 g_devel/overlay_plots
 
 g_devel/data
+g_devel/original_normalized
 
 .DS_Store
 .idea
