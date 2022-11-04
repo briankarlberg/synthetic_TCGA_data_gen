@@ -1,4 +1,4 @@
-[karlberb@exahead1 sample_count]$ cat j_lab_template.sh
+[karlberb@exahead1 synthetic_TCGA_data_gen]$ cat j_lab_template.sh
 #!/bin/bash
 #SBATCH --partition gpu --gres gpu:1
 #SBATCH -A compbio
@@ -9,7 +9,7 @@
 #SBATCH --error=./error_reports/slurm.%N.%j.err
 
 # Path to environment containing jupyter
-JUPYTER_ENV=/home/groups/EllrottLab/sample_count/j_lab_py3_env
+JUPYTER_ENV=/home/groups/EllrottLab/sample_count/synthetic_TCGA_data_gen/j_lab_py3_env
 
 source $JUPYTER_ENV/bin/activate
 
