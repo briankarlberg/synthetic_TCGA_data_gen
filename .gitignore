@@ -1,15 +1,17 @@
+g_devel/archive
+g_devel/baseline_overlay
+g_devel/data
 g_devel/data_5k
-g_devel/raw_baseline_F1s
 g_devel/data_miR
+g_devel/decoded
+g_devel/decoded_baseline_F1s
+g_devel/decoded_baseline_plots
+g_devel/original_baseline_F1s
+g_devel/original_baseline_plots
+g_devel/t1pa_decoded
+g_devel/train-on-one_loss_plots
 
 M1_venv_sc
-
-g_devel/raw_baseline_plots
-g_devel/decoded_baseline_plots
-g_devel/overlay_plots
-
-g_devel/data
-g_devel/original_normalized
 
 .DS_Store
 .idea
