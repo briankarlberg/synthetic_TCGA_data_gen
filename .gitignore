@@ -10,6 +10,8 @@ g_devel/original_baseline_F1s
 g_devel/original_baseline_plots
 g_devel/t1pa_decoded
 g_devel/train-on-one_loss_plots
+g_devel/t1pa_F1s
+g_devel/t1pa_plots
 
 g_devel/original_normalized
 g_devel/overlay_plots
