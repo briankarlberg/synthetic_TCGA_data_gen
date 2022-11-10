@@ -2,7 +2,8 @@ This is README for g_devel dir
 
 2022-11-10
 Thursday
-Focus on running through the train-on-one, predict-on-another experiment using the data_5k_stacked
+Focus on running through the train-on-one, predict-on-another experiment
+    *using the data_5k_stacked
 Steps:
     Check generation of data - a_step_up_mad5k - done
     Go to b_step-up version 2 - 

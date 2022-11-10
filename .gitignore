@@ -1,4 +1,7 @@
-g_devel/train_on_one_decoded
+g_devel/b_train-on-all_decoded
+g_devel/b_train-on-all_latent
+g_devel/b_train-on-one_latent
+g_devel/train-on-one_decoded
 g_devel/latent_feature_obect
 g_devel/step-up_loss_plots
 g_devel/train-on-all_loss_plots
