@@ -1,12 +1,6 @@
 # synthetic_TCGA_data_gen  
 Generative deep learning model development for synthetic TCGA omic sample generation  
 
-2022-11-12
-EDA in non-RNA
-    result: methylation data is continuous like m(i)RNA
-    CNVR and MUT can be one-hot-encoded to benchmark against a transformer
-Intersections of features across cohorts: a_ntrst_00
-
 2022-10-25
 pip install -r requirements.txt
 

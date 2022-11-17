@@ -1,3 +1,14 @@
+g_devel/input-to-VAE_F1s
+g_devel/self-decoded_overlays
+g_devel/train-on-all_latent_objects
+
+g_devel/self_F1s
+g_devel/self-decoded_GEXP
+g_devel/self_common_MAD_loss_plots
+g_devel/data_GEXP_5k_col_norm
+g_devel/self-decoded_miR
+g_devel/data_miR_col_norm
+g_devel/data_METH
 g_devel/train-on-one_overlays
 g_devel/train-on-one_F1s
 g_devel/original_stacked_F1s
